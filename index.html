@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HƏRF Ə75 — hər hərfin öz düyməsi</title>
+<meta name="description" content="Azərbaycan düzümlü mexaniki klaviatura: Ə-nin öz düyməsi var. Twenion-un konsept nümunə saytı.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#e6e0d3">
+<link rel="canonical" href="https://twenion.github.io/herf-klaviatura-demo/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="HƏRF Ə75 — hər hərfin öz düyməsi">
+<meta property="og:description" content="Azərbaycan düzümlü mexaniki klaviatura. Twenion konsept nümunəsi.">
+<meta property="og:image" content="https://twenion.github.io/herf-klaviatura-demo/img/og.jpg">
+<meta property="og:locale" content="az_AZ">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/Unbounded-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/Onest-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/site.css">
+<script>document.documentElement.classList.add('js')</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"HƏRF Ə75","description":"Azərbaycan düzümlü 75% mexaniki klaviatura (konsept nümunə).","brand":{"@type":"Brand","name":"HƏRF"},"offers":{"@type":"Offer","price":"329","priceCurrency":"AZN","availability":"https://schema.org/PreOrder"}}</script>
+</head>
+<body>
+<a class="skip" href="#al">Birbaşa sifarişə keç</a>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<div id="tags" aria-hidden="true"><svg id="tagLines"></svg></div>
+
+<header class="top">
+  <a class="brand" href="#" aria-label="HƏRF, səhifənin əvvəlinə">HƏRF</a>
+  <nav class="top__nav" aria-label="Əsas">
+    <a href="#yaz">Yaz</a>
+    <a href="#ici">İçi</a>
+    <a href="#elifba">Əlifba</a>
+  </nav>
+  <button class="sound" type="button" data-sound aria-pressed="false"><i aria-hidden="true"></i><span>Səs</span></button>
+  <button class="cartbtn" type="button" data-open-cart aria-haspopup="dialog"><span>Səbət</span><span class="cartbtn__n" data-cart-count>0</span></button>
+</header>
+
+<main>
+  <section class="hero" id="giris" data-scene="hero">
+    <p class="hero__k">HƏRF Ə75</p>
+    <h1 class="hero__line"><span class="sr">HƏRF Ə75 — </span>Hər hərfin öz düyməsi</h1>
+    <p class="hero__sub">Mexaniki klaviatura · 75% · Azərbaycan düzümü</p>
+    <a class="cue" href="#yaz"><span>Sürüşdür</span><i></i></a>
+  </section>
+
+  <section class="pin" id="yaz" data-scene="type" style="--len:260">
+    <div class="pin__stage">
+      <p class="typed" aria-live="polite"><span data-typed></span><i class="caret" aria-hidden="true"></i></p>
+      <p class="cap cap--b" data-at="0"><b class="only-fine">Klaviaturanda yaz</b><b class="only-touch">Düymələrə toxun</b> — ekrandakı da yazır.</p>
+      <p class="cap cap--b" data-at="0.55"><b>4 mm</b> yol. Hər düymənin altında öz yayı.</p>
+    </div>
+  </section>
+
+  <section class="pin" id="makro" data-scene="macro" style="--len:340">
+    <div class="pin__stage">
+      <p class="cap cap--b" data-at="0.26" data-until="0.5"><b>PBT plastik.</b> Divar 1,5 mm, toxunanda azca dənəli.</p>
+      <p class="cap cap--b cap--big" data-at="0.5"><b>Hərf boya deyil.</b> İkinci plastikdən tökülüb: illər keçsə də silinmir.</p>
+    </div>
+  </section>
+
+  <section class="pin" id="ici" data-scene="explode" style="--len:440">
+    <div class="pin__stage">
+      <p class="cap cap--tl" data-at="0.03" data-until="0.5"><b>Bir düymənin içi.</b> Beş hissə, bir basış.</p>
+      <ol class="parts" aria-label="Switch-in hissələri">
+        <li data-part="cap">Düymə · PBT</li>
+        <li data-part="top">Üst gövdə</li>
+        <li data-part="stem">Stem</li>
+        <li data-part="spring">Yay · qızıl örtük</li>
+        <li data-part="bottom">Alt gövdə</li>
+      </ol>
+      <figure class="curve" aria-label="Güc və yol qrafiki">
+        <svg viewBox="0 0 240 150" aria-hidden="true">
+          <path class="curve__axis" d="M30 120 H226 M30 120 V12"/>
+          <path class="curve__line" data-curve d=""/>
+          <circle class="curve__dot" data-curve-dot r="4.5" cx="30" cy="120"/>
+          <text x="226" y="138" text-anchor="end">yol, mm</text><text x="34" y="10">güc, q</text>
+          <text x="30" y="138" text-anchor="middle">0</text><text x="226" y="132" text-anchor="middle" class="sm">4</text>
+        </svg>
+        <figcaption><b data-curve-name>Qırmızı · xətti</b> <span data-curve-text>45 q-da işə düşür, 4 mm-də dayanır.</span></figcaption>
+      </figure>
+      <p class="cap cap--t" data-at="0.58"><b>Altı qat.</b> Hər biri səsi bir az dəyişir.</p>
+      <ol class="layers" aria-label="Klaviaturanın qatları">
+        <li data-layer="caps">Düymələr · 82</li>
+        <li data-layer="sw">Switch-lər · hot-swap</li>
+        <li data-layer="plate">Lövhə · pirinç</li>
+        <li data-layer="pcb">Plata</li>
+        <li data-layer="foam">Səs köpüyü</li>
+        <li data-layer="case">Korpus · alüminium</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="pin" id="elifba" data-scene="alphabet" style="--len:980">
+    <div class="pin__stage">
+      <p class="cap cap--t" data-at="0" data-until="0.07"><b>Bir əsrdə əlifba dəfələrlə dəyişdi.</b></p>
+      <div class="era" data-era="1" data-at="0.15" data-until="0.27"><span class="era__y">1929-a qədər</span><b class="era__n">Ərəb əlifbası</b></div>
+      <div class="era" data-era="2" data-at="0.35" data-until="0.47"><span class="era__y">1929</span><b class="era__n">Latın əlifbası</b><span class="era__s">1922-dən ərəb yazısı ilə yanaşı, 1929-dan rəsmi.</span></div>
+      <div class="era" data-era="3" data-at="0.55" data-until="0.67"><span class="era__y">1939</span><b class="era__n">Kiril əlifbası</b></div>
+      <div class="era" data-era="4" data-at="0.75" data-until="0.85"><span class="era__y">25 dekabr 1991</span><b class="era__n">Yenidən latın</b><span class="era__s">Ə yox idi. Yerində Ä.</span></div>
+      <div class="era era--last" data-era="5" data-at="0.9" data-until="1.01"><span class="era__y">16 may 1992</span><b class="era__n">Ə qayıtdı.</b></div>
+      <p class="cap cap--b" data-at="0.93"><b>Səs eyni qaldı, hərf dəyişdi.</b> Ə75-də Ə-nin öz düyməsi var.</p>
+    </div>
+  </section>
+
+  <section class="shop" id="al" data-scene="shop" aria-labelledby="shop-title">
+    <div class="bar">
+      <h2 id="shop-title" class="bar__t">Ə75 <small>329 AZN</small></h2>
+      <div class="opt">
+        <p class="opt__l">Korpus · <span data-case-name>Qrafit</span></p>
+        <div class="swatches" role="radiogroup" aria-label="Korpusun rəngi">
+          <button type="button" role="radio" aria-checked="true" data-case="qrafit" aria-label="Qrafit"><i></i></button>
+          <button type="button" role="radio" aria-checked="false" data-case="gumus" aria-label="Gümüş"><i></i></button>
+          <button type="button" role="radio" aria-checked="false" data-case="qum" aria-label="Qum"><i></i></button>
+        </div>
+      </div>
+      <div class="opt">
+        <p class="opt__l">Switch · <span data-sw-name>Qırmızı · xətti</span></p>
+        <div class="switches" role="radiogroup" aria-label="Switch növü">
+          <button type="button" role="radio" aria-checked="true" data-sw="red">Xətti</button>
+          <button type="button" role="radio" aria-checked="false" data-sw="brown">Taktil</button>
+          <button type="button" role="radio" aria-checked="false" data-sw="blue">Klik</button>
+        </div>
+      </div>
+      <button class="btn btn--solid" type="button" data-add>Səbətə at</button>
+    </div>
+    <p class="shop__line"><span>75% · 82 düymə və fırlanan düymə · hot-swap · alüminium korpus · pirinç lövhə · USB-C.</span> <button class="link" type="button" data-add-cap>Tək Ə düyməsi · kobalt · 19 AZN</button></p>
+  </section>
+</main>
+
+<footer class="foot">
+  <p class="foot__brand">HƏRF</p>
+  <p class="foot__links"><a href="#yaz">Yaz</a><a href="#elifba">Əlifba</a><a href="tel:+994000000000">+994 00 000 00 00</a><a href="mailto:salam@herf.example">salam@herf.example</a></p>
+  <p class="foot__note">Bu sayt <a href="https://twenion.com/">Twenion</a> tərəfindən hazırlanmış konsept nümunədir. HƏRF uydurma brenddir: məhsul, qiymətlər, əlaqə məlumatları və sifarişlər real deyil, heç bir məlumat heç yerə göndərilmir. Əlifbaların hərf qarşılıqları: Vikipediya, «Azerbaijani alphabet» cədvəli.</p>
+</footer>
+
+<div class="cart" id="cart" role="dialog" aria-modal="true" aria-labelledby="cart-title" hidden>
+  <div class="cart__veil" data-close-cart></div>
+  <div class="cart__sheet">
+    <div class="cart__head">
+      <h2 id="cart-title" data-cart-title>Səbət</h2>
+      <button class="cart__x" type="button" data-close-cart aria-label="Bağla">×</button>
+    </div>
+    <div class="cart__body" data-cart-body></div>
+  </div>
+</div>
+
+<noscript><style>.pin{height:auto}</style></noscript>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
