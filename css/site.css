@@ -87,7 +87,6 @@ main { position: relative; z-index: 2; }
 .cap--big b { display: block; font: 700 clamp(24px, 3vw, 40px)/1.1 var(--display); letter-spacing: -.01em; margin-bottom: 8px; }
 .js .cap { opacity: 0; transform: translate(-50%, 12px); transition: opacity .5s var(--ease), transform .5s var(--ease); pointer-events: none; }
 .js .cap.is-on { opacity: 1; transform: translate(-50%, 0); }
-html:not(.js) .cap { transform: translateX(-50%); position: relative; left: 50%; margin: 24px 0; }
 .only-touch { display: none; }
 @media (hover: none) { .only-touch { display: inline; } .only-fine { display: none; } }
 
@@ -121,7 +120,6 @@ html:not(.gl) .parts li, html:not(.gl) .layers li { position: static; opacity: 1
 .era--last .era__n { color: var(--cobalt); }
 .js .era { opacity: 0; transform: translate(-50%, 16px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
 .js .era.is-on { opacity: 1; transform: translate(-50%, 0); }
-html:not(.js) .era { position: relative; margin: 40px 0; transform: translateX(-50%); }
 
 /* ---------- shop ---------- */
 .shop { position: relative; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 0 16px max(26px, 4vh); }
@@ -225,3 +223,11 @@ html:not(.js) .era { position: relative; margin: 40px 0; transform: translateX(-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+/* without JS the pinned scenes become a plain reading column: no sticky stage, no absolute captions */
+html:not(.js) .pin { height: auto; }
+html:not(.js) .pin__stage { position: static; height: auto; overflow: visible; display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 56px 16px; }
+html:not(.js) .cap, html:not(.js) .era, html:not(.js) .curve { position: static; transform: none; margin: 0; top: auto; bottom: auto; left: auto; right: auto; }
+html:not(.js) .cap--tl { text-align: center; }
+html:not(.js) .typed { display: none; }
+html:not(.js) .parts, html:not(.js) .layers { text-align: center; }
