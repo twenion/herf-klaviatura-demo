@@ -44,6 +44,13 @@ The Ə key is cobalt whenever its letter is a schwa (Ə, Ә), so it goes grey in
 - **Rendering** (`js/gl.js`, WebGL2): full device resolution with MSAA; keycaps instanced per width (82 caps in 7
   draw calls), switches instanced per part. Sculpted rows (height and top slope per row) are applied in the vertex
   shader. Studio lighting with soft boxes; metals see a darker studio so brass and aluminium keep their contrast.
+  The scene is drawn front to back (caps, switches, plate, PCB, foam, case), so the depth test rejects hidden
+  pixels before the costly shading; the board was fill-rate bound and this alone took a 1920 × 950 frame on
+  integrated graphics from ~33 to ~25 ms.
+- **Resolution policy:** sharpness first. The canvas renders at the device pixel ratio (up to 3) and keeps it at
+  30 fps; only when two 50-frame windows in a row average over 40 ms does it give up 10 % of the scale (never below
+  60 %), and it takes it back when the cost, scaled by pixel count, fits again. `?q=1` pins the scale for testing,
+  `window.__herf` shows `{ q, avg, px }`.
 - **Legends** (`js/atlas.js`): every legend of every alphabet is drawn once into a cell the shape of its cap top
   and converted to a signed distance field, so a 120-pixel cell is still sharp when one key fills the screen.
 - **The cut** in the macro scene is done in the fragment shader: the cap is discarded past a plane, and where the
@@ -63,6 +70,22 @@ python3 -m http.server 8744
 ```
 
 then open `http://localhost:8744/`.
+
+## Budget and checks (20 Nov 2026)
+
+| | Measured | Budget |
+| --- | --- | --- |
+| HTML | 9.3 KB | < 60 KB |
+| CSS + JS (uncompressed) | 133.6 KB (CSS 21.5, JS 112.1) | < 200 KB |
+| First load, everything | 254 KB (fonts 110.6 KB) | < 1.5 MB |
+| Frame, 1920 × 950 canvas, Intel UHD (laptop) | 24–30 ms at full resolution, spikes to ~45 in scene changes | — |
+
+- Cart and checkout: 21 scripted checks pass (physical keys write Azerbaijani letters, case and switch radios with
+  arrow keys, cart, quantities, validation, shipping, success, Escape, single Ə cap, persistence after reload).
+- 360 px: no horizontal scroll at any scroll position. Console errors: 0.
+- Every font and weight in use draws ə Ə ş ğ İ ı ö ü ç itself (checked by fallback test and by eye).
+- `prefers-reduced-motion`: the opening is skipped and every scene sits still in its end state.
+- Without JavaScript the pinned scenes become a plain reading column: every caption, era and part name is readable.
 
 ## Honest notes
 
