@@ -29,11 +29,16 @@ try { board = new Board(canvas); root.classList.add('gl'); } catch (e) { console
 
 const mobileQ = matchMedia('(max-width: 860px)');
 let W = 0, H = 0, mobile = false, q = 1;
+const touch = matchMedia('(pointer: coarse)').matches;
+const TOUCH_PX = 1.1e6;
 function measure() {
   W = canvas.clientWidth || innerWidth;
   H = canvas.clientHeight || innerHeight;
   mobile = mobileQ.matches;
-  if (board) board.resize(W, H, Math.min(devicePixelRatio || 1, 3) * q);
+  // Phones: a pixel budget instead of the full device ratio (a 2.75x screen would be 2.3 M pixels per frame).
+  let ratio = Math.min(devicePixelRatio || 1, 3);
+  if (touch) ratio = Math.min(ratio, Math.sqrt(TOUCH_PX / (W * H)));
+  if (board) board.resize(W, H, Math.max(1, ratio) * q);
 }
 
 function activeSection() {
@@ -253,22 +258,24 @@ const frozen = qs.has('intro');
 if (frozen) introT = +qs.get('intro') * INTRO_DONE;
 
 // ---------------------------------------------------------------- quality
-let frames = 0, acc = 0, slow = 0;
+// Sharpness first: a steady 30 fps at full resolution beats 60 fps upscaled. A device that cannot hold ~30 fps
+// drops straight to the scale that should fit (cost ~ pixel count), and takes pixels back when there is room.
+let frames = 0, acc = 0, slow = 0, windows = 0;
 const qFixed = qs.has('q') ? +qs.get('q') : 0; // dev: ?q=1 pins the render scale (no adaptation)
 if (qFixed) q = qFixed;
+const dbg = qs.has('debug') ? document.body.appendChild(Object.assign(document.createElement('div'), { style: 'position:fixed;left:8px;bottom:8px;z-index:99;font:12px/1.3 monospace;background:#000c;color:#fff;padding:6px 8px;border-radius:6px;pointer-events:none' })) : null;
 function adapt(dt) {
   frames++; acc += dt;
-  if (frames < 50) return;
+  if (frames < 30 && !(acc > 1 && frames >= 5)) return; // 30 frames, or one second on a slow device
   const avg = (acc / frames) * 1000;
-  frames = 0; acc = 0;
+  frames = 0; acc = 0; windows++;
   window.__herf = { q, avg: Math.round(avg * 10) / 10, px: [canvas.width, canvas.height] };
-  // sharpness first: a steady 30 fps at full resolution beats 60 fps upscaled. Only a device below ~25 fps
-  // gives up pixels, and it gets them back when it is fast again.
-  if (qFixed) return;
-  // Two slow windows in a row (not one spike) to drop; back up when the cost, scaled by pixel count, still fits.
-  slow = avg > 40 ? slow + 1 : 0;
-  if (slow >= 2 && q > 0.6) { q = Math.max(0.6, Math.round((q - 0.1) * 10) / 10); slow = 0; measure(); }
-  else if (q < 1 && avg * ((q + 0.1) / q) ** 2 < 34) { q = Math.min(1, Math.round((q + 0.1) * 10) / 10); measure(); }
+  if (dbg) dbg.textContent = `q ${q.toFixed(2)} · ${avg.toFixed(1)} ms · ${canvas.width}×${canvas.height} · dpr ${devicePixelRatio}${touch ? ' · touch' : ''}`;
+  if (qFixed || windows < 2) return; // the first window holds start-up work
+  slow = avg > 36 ? slow + 1 : 0;
+  if ((slow >= 2 || avg > 55) && q > 0.5) {
+    q = Math.max(0.5, Math.floor(q * Math.sqrt(28 / avg) * 20) / 20); slow = 0; measure();
+  } else if (q < 1 && avg * ((q + 0.1) / q) ** 2 < 32) { q = Math.min(1, Math.round((q + 0.1) * 20) / 20); measure(); }
 }
 
 // ---------------------------------------------------------------- loop
@@ -278,7 +285,8 @@ let eraW = [1, 0, 0, 0, 0];
 let landed = new Uint8Array(KEYS.length);
 
 function frame(now) {
-  const dt = Math.min(0.05, Math.max(0.001, (now - last) / 1000));
+  const raw = (now - last) / 1000; // the real frame time, for the quality control
+  const dt = Math.min(0.05, Math.max(0.001, raw));
   last = now; clock += dt;
   if (!frozen && introT < INTRO_DONE) introT += dt * (scrollY > 40 ? 3 : 1);
   if (introT > INTRO_DONE - 0.9 && !root.classList.contains('intro-done')) root.classList.add('intro-done');
@@ -364,7 +372,7 @@ function frame(now) {
   const showCurve = sec.name === 'explode' && tg.ui && tg.ui.one > 0.8 && !(tg.ui.back > 0.05);
   curveEl.classList.toggle('is-on', !!showCurve);
   if (showCurve) { const mm = cl((tg.ui.press || 0) * 4); curveDot.setAttribute('cx', cX(mm).toFixed(1)); curveDot.setAttribute('cy', cY(forceAt(shop.sw, mm)).toFixed(1)); }
-  adapt(dt);
+  if (!document.hidden) adapt(Math.min(raw, 0.25));
   requestAnimationFrame(frame);
 }
 

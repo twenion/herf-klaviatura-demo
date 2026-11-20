@@ -6,8 +6,10 @@ import { keycap, caseMesh, slab, housingTop, housingBottom, stem, spring, knob, 
 import { KEYS, WIDTHS, ROW_H, ROW_SLOPE, KNOB } from './layout.js';
 import { CAP, ERA_INK } from './theme.js';
 
+// Touch devices (phones, tablets) get a lighter shader: the fine grain octaves are smaller than a pixel there anyway.
+const LITE = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
 const HEAD = `#version 300 es
-precision highp float;`;
+precision highp float;${LITE ? '\n#define LITE' : ''}`;
 
 const CAMERA = `
 uniform vec3 uCam, uU, uV, uW; uniform float uFocal, uAspect; uniform vec2 uOff;
@@ -186,7 +188,11 @@ void main(){
     legend = smoothstep(.75 - w, .75 + w, d);
   }
   vec3 alb = mix(base, ink, legend);
+#ifdef LITE
+  float grain = noise3(vL * 61.);
+#else
   float grain = noise3(vL * 260.) * .5 + noise3(vL * 61.) * .5;
+#endif
   alb *= .97 + .06 * grain;
   float ao = mix(.42, 1., smoothstep(0., rowH * .85, vL.y));
   if (vTag > 1.5 && vTag < 2.5) ao *= .62;
@@ -223,7 +229,11 @@ void main(){
   vec3 N = normalize(vN); vec3 V = normalize(uCam - vW);
   float ndv = max(dot(N, V), 0.);
   vec3 R = reflect(-V, N);
+#ifdef LITE
+  float brush = noise3(vec3(vL.x * 3., vL.y * 90., vL.z * 90.));
+#else
   float brush = noise3(vec3(vL.x * 3., vL.y * 90., vL.z * 90.)) * .5 + noise3(vL * 400.) * .5;
+#endif
   vec3 col;
   if (vTag > .5 && vTag < 1.5){
     // diamond-cut chamfer: bare aluminium, almost a mirror
@@ -260,7 +270,11 @@ void main(){
     alb = mix(alb, t.rgb, t.a);
     sh = mix(40., 300., t.a * step(.5, t.r));
   }
+#ifdef LITE
+  if (uFoam > .5){ float n = noise3(vL * 38.); alb *= .6 + .7 * n * n; }
+#else
   if (uFoam > .5){ float n = noise3(vL * 38.) * .6 + noise3(vL * 140.) * .4; alb *= .6 + .7 * n * n; }
+#endif
   float F = .04 + .96 * pow(1. - max(dot(N, V), 0.), 5.);
   vec3 col = alb * diffuse(N) + env(reflect(-V, N), mix(.4, .03, uGloss)) * F * mix(.15, .7, uGloss) + keys(N, V, sh) * mix(.05, .5, uGloss);
   fragColor = vec4(outc(col), 1.);
