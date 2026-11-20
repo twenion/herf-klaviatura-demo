@@ -33,7 +33,7 @@ function measure() {
   W = canvas.clientWidth || innerWidth;
   H = canvas.clientHeight || innerHeight;
   mobile = mobileQ.matches;
-  if (board) board.resize(W, H, Math.min(devicePixelRatio || 1, 2) * q);
+  if (board) board.resize(W, H, Math.min(devicePixelRatio || 1, 3) * q);
 }
 
 function activeSection() {
@@ -253,14 +253,22 @@ const frozen = qs.has('intro');
 if (frozen) introT = +qs.get('intro') * INTRO_DONE;
 
 // ---------------------------------------------------------------- quality
-let frames = 0, acc = 0;
+let frames = 0, acc = 0, slow = 0;
+const qFixed = qs.has('q') ? +qs.get('q') : 0; // dev: ?q=1 pins the render scale (no adaptation)
+if (qFixed) q = qFixed;
 function adapt(dt) {
   frames++; acc += dt;
   if (frames < 50) return;
   const avg = (acc / frames) * 1000;
   frames = 0; acc = 0;
   window.__herf = { q, avg: Math.round(avg * 10) / 10, px: [canvas.width, canvas.height] };
-  if (avg > 30 && q > 0.55) { q = Math.max(0.55, q - 0.15); measure(); }
+  // sharpness first: a steady 30 fps at full resolution beats 60 fps upscaled. Only a device below ~25 fps
+  // gives up pixels, and it gets them back when it is fast again.
+  if (qFixed) return;
+  // Two slow windows in a row (not one spike) to drop; back up when the cost, scaled by pixel count, still fits.
+  slow = avg > 40 ? slow + 1 : 0;
+  if (slow >= 2 && q > 0.6) { q = Math.max(0.6, Math.round((q - 0.1) * 10) / 10); slow = 0; measure(); }
+  else if (q < 1 && avg * ((q + 0.1) / q) ** 2 < 34) { q = Math.min(1, Math.round((q + 0.1) * 10) / 10); measure(); }
 }
 
 // ---------------------------------------------------------------- loop

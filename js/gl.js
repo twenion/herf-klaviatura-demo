@@ -591,26 +591,24 @@ export class Board {
       gl.uniform3fv(pr.u.uOffset, off); gl.uniform1f(pr.u.uSpin, spin); gl.uniform3fv(pr.u.uPivot, pivot);
       gl.bindVertexArray(m.vao); gl.drawElements(gl.TRIANGLES, m.count, gl.UNSIGNED_INT, 0);
     };
-    // case
-    u = this.common(P.metal, s, C, R);
-    gl.uniform3fv(u.uBase, s.caseCol.body); gl.uniform3fv(u.uEdge, s.caseCol.edge); gl.uniform1f(u.uRough, 0.32); gl.uniform1f(u.uDye, 0.72); gl.uniform1f(u.uAO, 1);
-    gl.uniform1f(u.uEnvBase, 0.55); // metals see a studio with dark flags, not the bright page
-    draw(P.metal, M.case);
-    // knob (same metal, finer finish)
-    gl.uniform1f(u.uRough, 0.18);
-    draw(P.metal, M.knob, [0, 0.12 + E.sw, 0], s.knob, [KNOB.x, 0, KNOB.z]);
-    // brass plate
-    gl.uniform3fv(u.uBase, [0.46, 0.29, 0.09]); gl.uniform3fv(u.uEdge, [0.95, 0.78, 0.45]); gl.uniform1f(u.uRough, 0.2); gl.uniform1f(u.uDye, 0.55);
-    gl.uniform1f(u.uAO, 1 - 0.87 * s.capCover * (1 - Math.min(1, (E.sw - E.plate) * 1.5 + E.caps * 0.5))); // under the caps the plate sits in shadow
-    draw(P.metal, M.plate, [0, E.plate - 0.06, 0]);
-    // foam, PCB
-    u = this.common(P.plastic, s, C, R);
-    gl.uniform1f(u.uUsePcb, 0); gl.uniform1f(u.uFoam, 1); gl.uniform3fv(u.uBase, [0.09, 0.09, 0.1]); gl.uniform1f(u.uGloss, 0.02);
-    draw(P.plastic, M.foam, [0, E.foam - 0.6, 0]);
-    gl.uniform1f(u.uFoam, 0); gl.uniform1f(u.uUsePcb, 1); gl.uniform3fv(u.uBase, [0.035, 0.04, 0.04]); gl.uniform1f(u.uGloss, 0.45);
-    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, this.tex.pcb); gl.uniform1i(u.uPcb, 2);
-    gl.uniform4f(u.uPcbRect, -8.12, -3.24, 16.24, 6.48);
-    draw(P.plastic, M.pcb, [0, E.pcb - 0.4, 0]);
+    // drawn front to back so the depth test rejects hidden pixels before the costly shading
+    // keycaps
+    if (this.atlasReady) {
+      u = this.common(P.cap, s, C, R);
+      gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, this.tex.atlas); gl.uniform1i(u.uAtlas, 1);
+      gl.uniform3fv(u.uCapCol, [...CAP.alpha, ...CAP.mod, ...CAP.accent]);
+      gl.uniform3fv(u.uInkLight, CAP.light);
+      gl.uniform3fv(u.uEraInk, s.eraInk.flat());
+      gl.uniform1f(u.uKH, KH); gl.uniform1f(u.uBase, CAP_BASE + E.sw); gl.uniform1f(u.uTravel, SW.travel);
+      gl.uniform1f(u.uCapsUp, E.caps); gl.uniform1f(u.uOne, s.one.index); gl.uniform1f(u.uOneUp, s.one.cap);
+      gl.uniform1f(u.uCutX, s.cutX); gl.uniform1f(u.uKTH, 0.075); gl.uniform1f(u.uGlowAll, s.glowAll || 0);
+      for (const c of this.caps) {
+        if (!c.count) continue;
+        gl.uniform2f(u.uTop, c.tx, c.tz);
+        gl.bindVertexArray(c.vao);
+        gl.drawElementsInstanced(gl.TRIANGLES, c.m.count, gl.UNSIGNED_INT, 0, c.count);
+      }
+    }
     // switches
     if (s.switches) {
       u = this.common(P.sw, s, C, R);
@@ -630,23 +628,28 @@ export class Board {
         part(M.pins, 4, [0.9, 0.7, 0.35], 0, 1);
       }
     }
-    // keycaps
-    if (this.atlasReady) {
-      u = this.common(P.cap, s, C, R);
-      gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, this.tex.atlas); gl.uniform1i(u.uAtlas, 1);
-      gl.uniform3fv(u.uCapCol, [...CAP.alpha, ...CAP.mod, ...CAP.accent]);
-      gl.uniform3fv(u.uInkLight, CAP.light);
-      gl.uniform3fv(u.uEraInk, s.eraInk.flat());
-      gl.uniform1f(u.uKH, KH); gl.uniform1f(u.uBase, CAP_BASE + E.sw); gl.uniform1f(u.uTravel, SW.travel);
-      gl.uniform1f(u.uCapsUp, E.caps); gl.uniform1f(u.uOne, s.one.index); gl.uniform1f(u.uOneUp, s.one.cap);
-      gl.uniform1f(u.uCutX, s.cutX); gl.uniform1f(u.uKTH, 0.075); gl.uniform1f(u.uGlowAll, s.glowAll || 0);
-      for (const c of this.caps) {
-        if (!c.count) continue;
-        gl.uniform2f(u.uTop, c.tx, c.tz);
-        gl.bindVertexArray(c.vao);
-        gl.drawElementsInstanced(gl.TRIANGLES, c.m.count, gl.UNSIGNED_INT, 0, c.count);
-      }
-    }
+    // brass plate
+    u = this.common(P.metal, s, C, R);
+    gl.uniform1f(u.uEnvBase, 0.55);
+    gl.uniform3fv(u.uBase, [0.46, 0.29, 0.09]); gl.uniform3fv(u.uEdge, [0.95, 0.78, 0.45]); gl.uniform1f(u.uRough, 0.2); gl.uniform1f(u.uDye, 0.55);
+    gl.uniform1f(u.uAO, 1 - 0.87 * s.capCover * (1 - Math.min(1, (E.sw - E.plate) * 1.5 + E.caps * 0.5))); // under the caps the plate sits in shadow
+    draw(P.metal, M.plate, [0, E.plate - 0.06, 0]);
+    // foam, PCB
+    u = this.common(P.plastic, s, C, R);
+    gl.uniform1f(u.uUsePcb, 0); gl.uniform1f(u.uFoam, 1); gl.uniform3fv(u.uBase, [0.09, 0.09, 0.1]); gl.uniform1f(u.uGloss, 0.02);
+    draw(P.plastic, M.foam, [0, E.foam - 0.6, 0]);
+    gl.uniform1f(u.uFoam, 0); gl.uniform1f(u.uUsePcb, 1); gl.uniform3fv(u.uBase, [0.035, 0.04, 0.04]); gl.uniform1f(u.uGloss, 0.45);
+    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, this.tex.pcb); gl.uniform1i(u.uPcb, 2);
+    gl.uniform4f(u.uPcbRect, -8.12, -3.24, 16.24, 6.48);
+    draw(P.plastic, M.pcb, [0, E.pcb - 0.4, 0]);
+    // case
+    u = this.common(P.metal, s, C, R);
+    gl.uniform3fv(u.uBase, s.caseCol.body); gl.uniform3fv(u.uEdge, s.caseCol.edge); gl.uniform1f(u.uRough, 0.32); gl.uniform1f(u.uDye, 0.72); gl.uniform1f(u.uAO, 1);
+    gl.uniform1f(u.uEnvBase, 0.55); // metals see a studio with dark flags, not the bright page
+    draw(P.metal, M.case);
+    // knob (same metal, finer finish)
+    gl.uniform1f(u.uRough, 0.18);
+    draw(P.metal, M.knob, [0, 0.12 + E.sw, 0], s.knob, [KNOB.x, 0, KNOB.z]);
     // shadows of airborne keys on the switch tops
     if (s.airShadows) {
       gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false);
