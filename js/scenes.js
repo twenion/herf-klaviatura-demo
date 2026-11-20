@@ -47,8 +47,8 @@ export function scene(name, p, c) {
       break;
     }
     case 'type': {
-      s.focus = M ? [-0.6, 0.4, 0.55] : [0, 0.3, 0.35];
-      s.dist = M ? 43 : 25;
+      s.focus = M ? [0.25, 0.4, 0.55] : [0, 0.3, 0.35];
+      s.dist = M ? 46 : 25; // phone: the letter block from S to Ə fits the width
       s.pitch = M ? 1.2 : 0.78;
       s.offY = M ? -0.12 : -0.1;
       s.yaw = 0;
@@ -58,7 +58,7 @@ export function scene(name, p, c) {
       // dive to Ə · it rises above its neighbours · the camera goes round to its side · the cap is cut open
       const a = ss(0.0, 0.3, p), up = ss(0.2, 0.42, p), side = ss(0.4, 0.56, p), cut = ss(0.5, 0.72, p) * (1 - ss(0.92, 1, p));
       const k = [SX, 0.75 + up * 1.05, SZ];
-      const from = M ? [-0.6, 0.4, 0.55] : [0, 0.3, 0.35];
+      const from = M ? [0.25, 0.4, 0.55] : [0, 0.3, 0.35];
       s.focus = L3(from, L3(k, [SX - 0.1, 1.62, SZ], side), a);
       s.dist = lerp(M ? 43 : 25, lerp(M ? 6.4 : 3.9, M ? 3.4 : 2.15, side), Math.pow(a, 0.7));
       s.pitch = lerp(M ? 1.2 : 0.78, lerp(0.3, 0.16, side), a);
